@@ -4,12 +4,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <title>Quiz: Anfíbios</title>
 </head>
 
 <body>
-    <!-- Botão voltar -->
+  <!-- Botão voltar -->
   <div class="voltar" onclick="redirecionar('selecionar.html')">
     <i class="bi bi-arrow-left-square"></i>
   </div>
@@ -40,9 +40,9 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      overflow: hidden;
     }
 
-    
     .voltar {
       position: fixed;
       top: 20px;
@@ -56,32 +56,33 @@
     .quiz-container {
       background-color: #f1fdf4;
       color: #000;
-      padding: 2rem;
-      border-radius: 15px;
+      padding: 1rem;
+      border-radius: 10px;
       width: 95%;
-      max-width: 700px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      max-width: 600px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
       text-align: center;
     }
 
     h1 {
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
       color: #1b5e20;
     }
 
     #numero-questao {
-      font-size: 1.3rem;
-      margin-bottom: 1rem;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
       font-weight: bold;
     }
 
     .pergunta-box {
       background-color: #c8efcc;
-      padding: 1rem;
-      border-radius: 10px;
+      padding: 0.75rem;
+      border-radius: 8px;
       font-weight: bold;
-      font-size: 1.2rem;
-      margin-bottom: 1.5rem;
+      font-size: 1rem;
+      margin-bottom: 1rem;
       color: #0f3d2c;
     }
 
@@ -93,16 +94,26 @@
       gap: 10px;
     }
 
+    .respostas-box li {
+      display: flex;
+    }
+
     .alternativa {
       background-color: #a5d6a7;
       border: none;
       color: #000;
-      font-size: 1rem;
-      padding: 12px;
-      border-radius: 10px;
+      font-size: 0.9rem;
+      padding: 8px;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
       transition: background-color 0.3s;
+      flex: 1;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
     }
 
     .alternativa:hover {
@@ -118,20 +129,20 @@
     }
 
     .explicacao-texto {
-      margin-top: 1rem;
-      font-size: 1rem;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
       color: #2e7d32;
-      min-height: 30px;
+      min-height: 24px;
     }
 
     .btn-proxima {
-      margin-top: 1.5rem;
-      padding: 10px 20px;
-      font-size: 1rem;
+      margin-top: 1rem;
+      padding: 8px 16px;
+      font-size: 0.9rem;
       background-color: #2e7d32;
       color: #fff;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
     }
 

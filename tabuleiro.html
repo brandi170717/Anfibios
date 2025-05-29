@@ -34,6 +34,12 @@
     </div>
   </div>
 
+  <div id="parabens">
+    🎉 PARABÉNS! 🎉<br>
+    Você completou o tabuleiro dos anfíbios!
+  </div>
+
+
   <style>
     body {
       margin: 0;
@@ -43,6 +49,37 @@
       color: #fff;
       text-align: center;
     }
+
+    #parabens {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #ffeb3b;
+      color: #2e7d32;
+      padding: 40px 60px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px #000;
+      font-size: 2em;
+      font-weight: bold;
+      text-align: center;
+      z-index: 2000;
+      animation: piscar 1s infinite alternate;
+    }
+
+    @keyframes piscar {
+      from {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      to {
+        opacity: 0.5;
+        transform: translate(-50%, -50%) scale(1.05);
+      }
+    }
+
 
     h1 {
       margin: 10px 0;
@@ -287,6 +324,24 @@
       atualizarSapo();
       atualizarPontuacao();
     }
+
+    function verificarResposta(resposta, correta) {
+  modal.style.display = "none";
+  if (resposta.toLowerCase() === correta.toLowerCase()) {
+    posicaoAtual = proximaPergunta;
+    acertos++;
+  } else {
+    posicaoAtual = Math.max(0, posicaoAtual - 1);
+    erros++;
+  }
+  atualizarSapo();
+  atualizarPontuacao();
+
+  if (posicaoAtual === casas.length - 1) {
+    document.getElementById('parabens').style.display = 'block';
+  }
+}
+
 
     atualizarSapo();
     atualizarPontuacao();

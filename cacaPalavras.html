@@ -1,88 +1,44 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <title>Caça-Palavras de Anfíbios</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-</head>
-<body>
-   <!-- Botão voltar -->
-  <div class="voltar" onclick="redirecionar('selecionar.html')">
-    <i class="bi bi-arrow-left-square"></i>
-  </div>
-
-  <h1>Caça-Palavras de Anfíbios</h1>
-
-  <div id="word-list"></div>
-  <div id="grid"></div>
-
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #e8f5e9;
       color: #2e7d32;
-      margin: 0;
       padding: 20px;
-      position: relative;
-    }
-
-    .voltar {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-size: 32px;
-      cursor: pointer;
-      color: #2e7d32;
-    }
-
-    h1 {
-      font-size: 2.2em;
-      margin-top: 60px;
-      /* Espaço abaixo do botão voltar */
-      margin-bottom: 10px;
-      color: #1b5e20;
       text-align: center;
     }
-
+    h1 {
+      margin-bottom: 10px;
+    }
     #word-list {
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
-      margin-bottom: 20px;
       gap: 10px;
-      padding: 10px 0;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
     }
-
     #word-list span {
-      background-color: #a5d6a7;
+      background: #a5d6a7;
       padding: 6px 12px;
       border-radius: 6px;
       font-weight: bold;
-      color: #1b5e20;
-      transition: all 0.2s ease;
     }
-
     #word-list span.found {
       background-color: #388e3c;
       color: white;
       text-decoration: line-through;
     }
-
     #grid {
       display: grid;
       grid-template-columns: repeat(25, 40px);
       grid-template-rows: repeat(10, 40px);
       gap: 3px;
-      background-color: #a5d6a7;
-      padding: 48px 10px 10px 10px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      max-width: fit-content;
-      margin: 0 auto;
-      /* Centraliza horizontalmente */
+      justify-content: center;
     }
-
     .cell {
       background-color: #d0f0c0;
       border: 2px solid #81c784;
@@ -96,148 +52,191 @@
       text-transform: uppercase;
       color: #1b5e20;
       cursor: pointer;
-      transition: background 0.2s ease;
       border-radius: 5px;
     }
-
-    .cell:hover {
-      background-color: #c5e1a5;
-    }
-
     .cell.selected {
       background-color: #aed581;
       border-color: #558b2f;
     }
-
     .cell.found {
       background-color: #66bb6a !important;
       color: #fff;
       border-color: #388e3c;
     }
   </style>
-  <script>
-    function redirecionar(url) {
-      window.location.href = url;
-    }
+</head>
+<body>
 
-    const palavras = [
-      "sapo", "girino", "anfibio", "anuros",
-      "metamorfose", "oviparo", "terrestre"
+<h1>Caça-Palavras de Anfíbios</h1>
+
+<div id="word-list"></div>
+<div id="grid"></div>
+
+<script>
+  const palavras = ["sapo", "girino", "anfibio", "anuros", "metamorfose", "oviparo", "terrestre"];
+
+  const rows = 10;
+  const cols = 25;
+  const grid = Array.from({ length: rows }, () => Array(cols).fill(''));
+  const celulas = [];
+  const posicoesPalavras = [];
+
+  function colocarPalavra(palavra) {
+    const direcoes = [
+      { dr: 0, dc: 1 },   // Horizontal
+      { dr: 1, dc: 0 },   // Vertical
+      { dr: 1, dc: 1 },   // Diagonal \
+      { dr: 1, dc: -1 }   // Diagonal /
     ];
 
-    const gridSize = 15;
-    const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(''));
-    const celulas = [];
-    const posicoesPalavras = [];
+    let colocado = false;
+    while (!colocado) {
+      const direcao = direcoes[Math.floor(Math.random() * direcoes.length)];
+      const maxRow = rows - (direcao.dr * (palavra.length - 1));
+      const maxCol = direcao.dc > 0 ? cols - (direcao.dc * (palavra.length - 1))
+                      : direcao.dc < 0 ? (palavra.length - 1) : cols -1;
+      const row = Math.floor(Math.random() * (maxRow + 1));
+      const col = direcao.dc < 0 
+                    ? Math.floor(Math.random() * (maxCol + 1)) + (palavra.length - 1) 
+                    : Math.floor(Math.random() * (maxCol + 1));
 
-    function colocarPalavra(palavra) {
-      const direcao = Math.random() < 0.5 ? 'horizontal' : 'vertical';
-      const maxRow = direcao === 'horizontal' ? gridSize : gridSize - palavra.length;
-      const maxCol = direcao === 'vertical' ? gridSize : gridSize - palavra.length;
-      let colocado = false;
+      let podeColocar = true;
+      for (let i = 0; i < palavra.length; i++) {
+        const r = row + i * direcao.dr;
+        const c = col + i * direcao.dc;
+        if (r < 0 || r >= rows || c < 0 || c >= cols) {
+          podeColocar = false;
+          break;
+        }
+        if (grid[r][c] && grid[r][c] !== palavra[i].toUpperCase()) {
+          podeColocar = false;
+          break;
+        }
+      }
 
-      while (!colocado) {
-        const row = Math.floor(Math.random() * maxRow);
-        const col = Math.floor(Math.random() * maxCol);
-
-        let podeColocar = true;
+      if (podeColocar) {
+        let posicao = [];
         for (let i = 0; i < palavra.length; i++) {
-          const r = direcao === 'horizontal' ? row : row + i;
-          const c = direcao === 'horizontal' ? col + i : col;
-          if (grid[r][c] && grid[r][c] !== palavra[i].toUpperCase()) {
-            podeColocar = false;
-            break;
-          }
+          const r = row + i * direcao.dr;
+          const c = col + i * direcao.dc;
+          grid[r][c] = palavra[i].toUpperCase();
+          posicao.push({ r, c });
         }
-
-        if (podeColocar) {
-          let posicao = [];
-          for (let i = 0; i < palavra.length; i++) {
-            const r = direcao === 'horizontal' ? row : row + i;
-            const c = direcao === 'horizontal' ? col + i : col;
-            grid[r][c] = palavra[i].toUpperCase();
-            posicao.push({ r, c });
-          }
-          posicoesPalavras.push({ palavra: palavra.toUpperCase(), posicao });
-          colocado = true;
-        }
+        posicoesPalavras.push({ palavra: palavra.toUpperCase(), posicao });
+        colocado = true;
       }
     }
+  }
 
-    const palavrasEmbaralhadas = [...palavras].sort(() => Math.random() - 0.5);
-    palavrasEmbaralhadas.forEach(colocarPalavra);
+  palavras.forEach(colocarPalavra);
 
-    for (let r = 0; r < gridSize; r++) {
-      for (let c = 0; c < gridSize; c++) {
-        if (!grid[r][c]) {
-          grid[r][c] = String.fromCharCode(65 + Math.floor(Math.random() * 26));
-        }
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (!grid[r][c]) {
+        grid[r][c] = String.fromCharCode(65 + Math.floor(Math.random() * 26));
       }
     }
+  }
 
-    const gridContainer = document.getElementById('grid');
-    const selectedCells = [];
+  const gridContainer = document.getElementById('grid');
+  const selectedCells = [];
 
-    for (let r = 0; r < gridSize; r++) {
-      celulas[r] = [];
-      for (let c = 0; c < gridSize; c++) {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        cell.textContent = grid[r][c];
-        cell.dataset.row = r;
-        cell.dataset.col = c;
-        cell.addEventListener('click', () => selecionarCelula(cell));
-        gridContainer.appendChild(cell);
-        celulas[r][c] = cell;
-      }
+  for (let r = 0; r < rows; r++) {
+    celulas[r] = [];
+    for (let c = 0; c < cols; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.textContent = grid[r][c];
+      cell.dataset.row = r;
+      cell.dataset.col = c;
+      cell.addEventListener('click', () => selecionarCelula(cell));
+      gridContainer.appendChild(cell);
+      celulas[r][c] = cell;
+    }
+  }
+
+  const wordList = document.getElementById('word-list');
+  palavras.forEach(palavra => {
+    const span = document.createElement('span');
+    span.textContent = palavra;
+    span.id = `word-${palavra.toUpperCase()}`;
+    wordList.appendChild(span);
+  });
+
+  function selecionarCelula(cell) {
+    const row = parseInt(cell.dataset.row);
+    const col = parseInt(cell.dataset.col);
+
+    if (cell.classList.contains("found")) return;
+
+    // Se é o primeiro clique
+    if (selectedCells.length === 0) {
+      selectedCells.push({ row, col, element: cell });
+      cell.classList.add('selected');
+      return;
     }
 
-    const wordList = document.getElementById('word-list');
-    palavrasEmbaralhadas.forEach(palavra => {
-      const span = document.createElement('span');
-      span.textContent = palavra;
-      span.id = `word-${palavra.toUpperCase()}`;
-      wordList.appendChild(span);
-    });
+    const first = selectedCells[0];
 
-    function selecionarCelula(cell) {
-      if (cell.classList.contains("found")) return;
-
-      const row = parseInt(cell.dataset.row);
-      const col = parseInt(cell.dataset.col);
-      const index = selectedCells.findIndex(c => c.row === row && c.col === col);
-
-      if (index >= 0) {
-        selectedCells.splice(index, 1);
-        cell.classList.remove('selected');
-      } else {
+    // Determinar direção após o segundo clique
+    if (selectedCells.length === 1) {
+      const dr = row - first.row;
+      const dc = col - first.col;
+      if (Math.abs(dr) <= 1 && Math.abs(dc) <= 1 && (dr !== 0 || dc !== 0)) {
+        const dirRow = Math.sign(dr);
+        const dirCol = Math.sign(dc);
+        selectedCells.direction = { dr: dirRow, dc: dirCol };
         selectedCells.push({ row, col, element: cell });
         cell.classList.add('selected');
       }
-
-      verificarPalavra();
+      return;
     }
 
-    function verificarPalavra() {
-      const letras = selectedCells.map(c => grid[c.row][c.col]).join('');
-      const letrasReversa = letras.split('').reverse().join('');
+    const { dr, dc } = selectedCells.direction;
+    const expectedRow = first.row + dr * selectedCells.length;
+    const expectedCol = first.col + dc * selectedCells.length;
 
-      for (const item of posicoesPalavras) {
-        const palavra = item.palavra;
-        if (letras === palavra || letrasReversa === palavra) {
-          item.posicao.forEach(p => {
-            celulas[p.r][p.c].classList.add('found');
-            celulas[p.r][p.c].classList.remove('selected');
-          });
+    if (row === expectedRow && col === expectedCol) {
+      selectedCells.push({ row, col, element: cell });
+      cell.classList.add('selected');
+    } else {
+      limparSelecao();
+      return;
+    }
 
-          const wordItem = document.getElementById(`word-${palavra}`);
-          if (wordItem) wordItem.classList.add('found');
+    verificarPalavra();
+  }
 
-          selectedCells.length = 0;
-          return;
-        }
+  function verificarPalavra() {
+    const letras = selectedCells.map(c => grid[c.row][c.col]).join('');
+    const letrasReversa = letras.split('').reverse().join('');
+
+    for (const item of posicoesPalavras) {
+      const palavra = item.palavra;
+      if (letras === palavra || letrasReversa === palavra) {
+        item.posicao.forEach(p => {
+          celulas[p.r][p.c].classList.add('found');
+          celulas[p.r][p.c].classList.remove('selected');
+        });
+
+        const wordItem = document.getElementById(`word-${palavra}`);
+        if (wordItem) wordItem.classList.add('found');
+
+        limparSelecao();
+        return;
       }
     }
-  </script>
+  }
+
+  function limparSelecao() {
+    selectedCells.forEach(c => c.element.classList.remove('selected'));
+    selectedCells.length = 0;
+    delete selectedCells.direction;
+  }
+
+  // Cancela seleção clicando fora ou clicando duas vezes na mesma letra
+  document.addEventListener('dblclick', limparSelecao);
+</script>
+
 </body>
 </html>
